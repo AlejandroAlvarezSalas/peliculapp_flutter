@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
+import './screens/screens.dart';
+import './theme/app_theme.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() => runApp(const MyApp());
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'PeliculApp',
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+        appBar: AppBar(title: const Text('Material App Bar')),
+        body: const Center(child: Text('Hello World')),
       ),
+      theme: AppTheme.lightTheme,
+      initialRoute: 'home',
+      routes: {
+        'home': (context) => HomeScreen(),
+        'details': (context) => DetailsScreen(),
+      },
     );
   }
 }
