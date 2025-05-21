@@ -14,15 +14,7 @@ class HomeScreen extends StatelessWidget {
     final movieProvider = Provider.of<MoviesProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('PeliculApp'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: Icon(Icons.search_outlined),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('PeliculApp')),
       body: SingleChildScrollView(
         child: Column(
           children: [
