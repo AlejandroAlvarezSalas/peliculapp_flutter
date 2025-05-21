@@ -1,6 +1,9 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:peliculapp_flutter/providers/providers.dart';
 import 'package:peliculapp_flutter/widgets/widgets.dart';
+import 'package:provider/provider.dart';
+import '../models/models.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,6 +11,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
+    final movieProvider = Provider.of<MoviesProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('PeliculApp'),
@@ -22,18 +27,20 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             _Highlights(
-              itemCount: 10,
+              itemCount: movieProvider.onDisplayMovies.length,
               screenLongestRatioCard: 0.6,
               screenShortestRatioCard: 0.6,
               screenLongestRatioSectionHeight: 0.5,
               showDetails: true,
+              movies: movieProvider.onDisplayMovies,
             ),
             _Favourites(
               screenShortestRatio: 0.5,
               screenLongestRatio: 0.4,
               screenLongestRatioSectionHeight: 0.5,
-              itemCount: 5,
+              itemCount: movieProvider.onDisplayMovies.length,
               showDetails: true,
+              movies: movieProvider.onDisplayMovies,
             ),
           ],
         ),
@@ -48,6 +55,7 @@ class _Highlights extends StatelessWidget {
   final double screenLongestRatioSectionHeight;
   final bool showDetails;
   final int itemCount;
+  final List<Result> movies;
 
   const _Highlights({
     super.key,
@@ -56,6 +64,7 @@ class _Highlights extends StatelessWidget {
     required this.screenLongestRatioSectionHeight,
     this.showDetails = false,
     required this.itemCount,
+    required this.movies,
   });
 
   @override
@@ -78,7 +87,7 @@ class _Highlights extends StatelessWidget {
                       ? Navigator.pushNamed(
                         context,
                         'details',
-                        arguments: index,
+                        arguments: movies[index],
                       )
                       : null,
           itemBuilder:
@@ -87,7 +96,7 @@ class _Highlights extends StatelessWidget {
                 child: FadeInImage(
                   fit: BoxFit.cover,
                   placeholder: AssetImage('assets/loading-roll.gif'),
-                  image: NetworkImage('https://i.sstatic.net/y9DpT.jpg'),
+                  image: NetworkImage(movies[index].fullPosterImgUrl),
                 ),
               ),
         ),
@@ -102,6 +111,7 @@ class _Favourites extends StatelessWidget {
   final double screenLongestRatioSectionHeight;
   final bool showDetails;
   final int itemCount;
+  final List<Result> movies;
 
   const _Favourites({
     super.key,
@@ -110,6 +120,7 @@ class _Favourites extends StatelessWidget {
     required this.screenLongestRatioSectionHeight,
     this.showDetails = false,
     required this.itemCount,
+    required this.movies,
   });
 
   @override
@@ -140,8 +151,7 @@ class _Favourites extends StatelessWidget {
               screenShortestRatio: screenShortestRatio,
               screenLongestRatio: screenLongestRatio,
               showDetails: showDetails,
-              footer:
-                  'Title: fndsjafuhndhsuafndshjafndsjiofbdshiaofbdhnsioagbndfhaogbndfhsiogbndhiosgndfjisogbndfhosgnadfijpndahipgbfdhiagndfjiap',
+              items: movies,
             ),
           ),
         ],

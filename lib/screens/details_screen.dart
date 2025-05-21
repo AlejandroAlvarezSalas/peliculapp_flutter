@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/models.dart';
+import '../providers/providers.dart';
 import '../widgets/widgets.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -7,24 +10,38 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Result movie = ModalRoute.of(context)!.settings.arguments as Result;
+
     return Scaffold(
       body: CustomScrollView(
         slivers: <Widget>[
-          _CustomAppBar(screenHeightRatioSectionHeight: 0.4),
+          _CustomAppBar(
+            screenHeightRatioSectionHeight: 0.4,
+            imageUrl: movie.backdropImgUrl,
+          ),
           SliverList(
             delegate: SliverChildListDelegate([
               _FilmInfo(
                 screenLongestRatio: 0.3,
                 screenShortestRatio: 0.4,
                 screenLongestRatioSectionHeight: 0.3,
+                imageUrl: movie.fullPosterImgUrl,
+                originalTitle: movie.originalTitle,
+                originalLanguage: movie.originalLanguage,
+                releaseDate:
+                    '${movie.releaseDate.day}/${movie.releaseDate.month}/${movie.releaseDate.year}',
+                localizedTitle: movie.title,
+                voteAverage: movie.voteAverage,
+                voteCount: movie.voteCount,
               ),
-              _OverView(),
-              _Casting(
+              _OverView(overviewText: movie.overview),
+              /*_Casting(
                 screenLongestRatio: 0.3,
                 screenShortestRatio: 0.4,
                 screenLongestRatioSectionHeight: 0.4,
                 itemCount: 5,
-              ),
+                casting: movieProvider.onDisplayMovies,
+              ),*/
             ]),
           ),
         ],
@@ -35,10 +52,12 @@ class DetailsScreen extends StatelessWidget {
 
 class _CustomAppBar extends StatelessWidget {
   final double screenHeightRatioSectionHeight;
+  final String imageUrl;
 
   const _CustomAppBar({
     super.key,
     required this.screenHeightRatioSectionHeight,
+    required this.imageUrl,
   });
 
   @override
@@ -50,14 +69,9 @@ class _CustomAppBar extends StatelessWidget {
       pinned: true,
       snap: true,
       flexibleSpace: FlexibleSpaceBar(
-        title: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Text('Details: FILENAME', maxLines: 1),
-        ),
-        centerTitle: true,
         background: FadeInImage(
           placeholder: AssetImage('assets/loading-roll.gif'),
-          image: NetworkImage('https://i.sstatic.net/y9DpT.jpg'),
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -69,11 +83,26 @@ class _FilmInfo extends StatelessWidget {
   final double screenShortestRatio;
   final double screenLongestRatio;
   final double screenLongestRatioSectionHeight;
+  final String imageUrl;
+  final String originalTitle;
+  final String originalLanguage;
+  final String releaseDate;
+  final String localizedTitle;
+  final double voteAverage;
+  final int voteCount;
+
   const _FilmInfo({
     super.key,
     required this.screenShortestRatio,
     required this.screenLongestRatio,
     required this.screenLongestRatioSectionHeight,
+    required this.imageUrl,
+    required this.originalTitle,
+    required this.originalLanguage,
+    required this.releaseDate,
+    required this.localizedTitle,
+    required this.voteAverage,
+    required this.voteCount,
   });
 
   @override
@@ -95,8 +124,16 @@ class _FilmInfo extends StatelessWidget {
                   _FilmPosterImage(
                     screenShortestRatio: screenShortestRatio,
                     screenLongestRatio: screenLongestRatio,
+                    imageUrl: imageUrl,
                   ),
-                  _FilmData(),
+                  _FilmData(
+                    localizedTitle: localizedTitle,
+                    originalLanguage: originalLanguage,
+                    originalTitle: originalTitle,
+                    releaseDate: releaseDate,
+                    voteAverage: voteAverage,
+                    voteCount: voteCount,
+                  ),
                 ],
               ),
             ),
@@ -110,10 +147,12 @@ class _FilmInfo extends StatelessWidget {
 class _FilmPosterImage extends StatelessWidget {
   final double screenShortestRatio;
   final double screenLongestRatio;
+  final String imageUrl;
   const _FilmPosterImage({
     super.key,
     required this.screenShortestRatio,
     required this.screenLongestRatio,
+    required this.imageUrl,
   });
 
   @override
@@ -127,7 +166,7 @@ class _FilmPosterImage extends StatelessWidget {
         child: FadeInImage(
           fit: BoxFit.cover,
           placeholder: AssetImage('assets/loading-roll.gif'),
-          image: NetworkImage('https://i.sstatic.net/y9DpT.jpg'),
+          image: NetworkImage(imageUrl),
         ),
       ),
     );
@@ -135,29 +174,79 @@ class _FilmPosterImage extends StatelessWidget {
 }
 
 class _FilmData extends StatelessWidget {
-  const _FilmData({super.key});
+  final String originalTitle;
+  final String originalLanguage;
+  final String releaseDate;
+  final String localizedTitle;
+  final double voteAverage;
+  final int voteCount;
+
+  const _FilmData({
+    super.key,
+    required this.originalTitle,
+    required this.originalLanguage,
+    required this.releaseDate,
+    required this.localizedTitle,
+    required this.voteAverage,
+    required this.voteCount,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 3.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 5,
           children: [
-            Text('Title: TITULO'),
-            Text('Release date: XX-XX-XXXX'),
-            Text('Country: COUNTRY'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
-            Text('Genre: GENRE'),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Título:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('$localizedTitle'),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Título original:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('$originalTitle'),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Fecha de lanzamiento:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('$releaseDate'),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Idioma original:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('$originalLanguage'),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Valoracion: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('$voteAverage ($voteCount)'),
+              ],
+            ),
           ],
         ),
       ),
@@ -166,30 +255,25 @@ class _FilmData extends StatelessWidget {
 }
 
 class _OverView extends StatelessWidget {
-  const _OverView({super.key});
+  final String overviewText;
+  const _OverView({super.key, required this.overviewText});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Text(
-        '''ndsjalf dhjsal gfjlds gfjldsgbhjflds ghjflds gbhjfldsg jhfdls ghjflds
-        fdmsjaknfjdlksngjfkldsngjkdfs
-        gfdjnsgkndfjkgsfjkdñsgfkjlsgnfkjldsgkdflsnoñfndjkglsn dfs
-        gfdjsgknfkdjglsfkdlsgn d,.sngdfkjls
-        gfdsgjfkodsgnmlfñsngjfkñsngkfjdlsg
-        fgkfdñsngjkfñniosñafmdklsmklñfhsa fnekoañnfdañnfdsñoav fdspia´fmdsioañnvça
-        njfkldjkds vflds ''',
-      ),
+      child: Text(overviewText),
     );
   }
 }
 
+/*
 class _Casting extends StatelessWidget {
   final double screenShortestRatio;
   final double screenLongestRatio;
   final double screenLongestRatioSectionHeight;
   final int itemCount;
+  final List<Result> casting;
 
   const _Casting({
     super.key,
@@ -197,6 +281,7 @@ class _Casting extends StatelessWidget {
     required this.screenLongestRatio,
     required this.screenLongestRatioSectionHeight,
     required this.itemCount,
+    required this.casting,
   });
 
   @override
@@ -214,6 +299,7 @@ class _Casting extends StatelessWidget {
               itemCount: itemCount,
               screenShortestRatio: screenShortestRatio,
               screenLongestRatio: screenLongestRatio,
+              items: casting,
               footer: 'FMDSAGKJNDFJKAFNDSALFdsnajghf ahjfdasnf hjlasgjldsa ',
             ),
           ),
@@ -221,4 +307,4 @@ class _Casting extends StatelessWidget {
       ),
     );
   }
-}
+}*/

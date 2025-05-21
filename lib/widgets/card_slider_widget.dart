@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../models/models.dart';
+
 class CardSliderWidget extends StatelessWidget {
   final double screenShortestRatio;
   final double screenLongestRatio;
   final bool showDetails;
   final int itemCount;
-  final String footer;
+  final String? footer;
+  final List<Result> items;
 
   const CardSliderWidget({
     super.key,
@@ -14,7 +17,8 @@ class CardSliderWidget extends StatelessWidget {
     required this.itemCount,
     required this.screenLongestRatio,
     required this.screenShortestRatio,
-    required this.footer,
+    this.footer,
+    required this.items,
   });
 
   @override
@@ -41,19 +45,19 @@ class CardSliderWidget extends StatelessWidget {
                                 ? Navigator.pushNamed(
                                   context,
                                   'details',
-                                  arguments: index,
+                                  arguments: items[index],
                                 )
                                 : null,
                     child: FadeInImage(
                       placeholder: AssetImage('assets/loading-roll.gif'),
-                      image: NetworkImage('https://i.sstatic.net/y9DpT.jpg'),
+                      image: NetworkImage(items[index].fullPosterImgUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
               Text(
-                'Titulo nfdhslafbhjsld hfdjsakfhdl njdfkalfmdjsak fdksalf ndslakf dnksla fndkslaf dnsalf dnsas fjhdsiafbkdhsa nfejaligfbdhiat9treopoñ',
+                footer ?? items[index].title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
